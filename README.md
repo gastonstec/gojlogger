@@ -1,0 +1,2 @@
+# gojlogger
+golang json logger
