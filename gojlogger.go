@@ -1,7 +1,4 @@
-// Copyright Kueski. All rights reserved.
-// Use of this source code is not licensed
-
-// Package clogger provides a custom logger with
+// Package gojlogger provides a custom logger with
 // Info, Warning an Error logging methods.
 //
 // The default timezone is UTC, use
@@ -17,35 +14,39 @@ import (
 	"log"
 	"os"
 	"time"
+	"fmt"
 	"github.com/gastonstec/goutils"
 )
 
 var (
-	cLogger     *log.Logger = nil
-	TimeZoneUTC bool        = true
+	cLogger     	*log.Logger = nil
+	TimeZoneUTC 	bool        = true
+)
+
+const(
+	CANNOT_OPEN_FILE = "%s: cannot open file %s"
 )
 
 // Function InitLogger init the logger with the specified path
 // and filename (for example ./mylog.log), if the path is empty
-// os.Stdout will be used
+// os.Stdout will be used. The log file is open for append.
 func InitLogger(filepath string) error {
 
-	//Check filepath
+	// check filepath
 	if filepath == "" {
+		// log to stdout
 		cLogger = log.New(os.Stdout, "", 0)
 	} else {
-		// Open log file
+		// open log file for append
 		logFile, err := os.OpenFile(filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
-			log.Fatal(err)
-			return err
+			return fmt.Errorf(CANNOT_OPEN_FILE, goutils.GetFunctionName(), filepath)
 		}
 		cLogger = log.New(logFile, "", 0)
 	}
 
 	// return no errors
 	return nil
-
 }
 
 // Function LogInfo writes a INFO entry in the log
@@ -98,7 +99,7 @@ func LogWarning(msg string) {
 
 }
 
-// Function LogInfo writes a ERROR entry in the log
+// Function LogInfo writes an ERROR entry in the log
 func LogError(msg string) {
 
 	var logEntry string
